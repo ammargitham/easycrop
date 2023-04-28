@@ -25,11 +25,11 @@ android {
         compose = true
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "11"
     }
     publishing {
         singleVariant("release") {
@@ -57,9 +57,10 @@ fun extProperty(key: String): String {
 
 publishing {
     val data = object {
-        val groupId = "io.github.mr0xf00"
+        // val groupId = "io.github.mr0xf00"
+        val groupId = "com.github.ammargitham"
         val artifactId = "easycrop"
-        val version = "0.1.1"
+        val version = "0.1.2"
         private val releasesRepoUrl =
             uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
         private val snapshotsRepoUrl =
@@ -99,20 +100,20 @@ publishing {
             }
         }
     }
-    publications {
-        repositories {
-            maven {
-                name = "oss"
-                url = data.repoUrl
-                credentials {
-                    username = extProperty("ossrh.user")
-                    password = extProperty("ossrh.pass")
-                }
-            }
-        }
-    }
+    // publications {
+    //     repositories {
+    //         maven {
+    //             name = "oss"
+    //             url = data.repoUrl
+    //             credentials {
+    //                 username = extProperty("ossrh.user")
+    //                 password = extProperty("ossrh.pass")
+    //             }
+    //         }
+    //     }
+    // }
 }
 
-signing {
-    sign(publishing.publications)
-}
+// signing {
+//     sign(publishing.publications)
+// }
