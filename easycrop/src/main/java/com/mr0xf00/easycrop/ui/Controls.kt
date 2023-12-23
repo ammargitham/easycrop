@@ -63,6 +63,20 @@ internal fun CropperControls(
 ) {
     CompositionLocalProvider(LocalVerticalControls provides isVertical) {
         ButtonsBar(modifier = modifier) {
+            // Row(
+            //     modifier = Modifier
+            //         .clickable { state.enabled = !state.enabled }
+            //         .padding(start = 8.dp),
+            //     verticalAlignment = Alignment.CenterVertically,
+            // ) {
+            //     Checkbox(
+            //         checked = state.enabled,
+            //         onCheckedChange = {
+            //             state.enabled = it
+            //         },
+            //     )
+            //     Text(text = "Enabled")
+            // }
             IconButton(onClick = { state.rotLeft() }) {
                 Icon(painterResource(id = R.drawable.rot_left), null)
             }
@@ -125,7 +139,8 @@ private fun ButtonsBar(
             buttons()
         } else Row(
             modifier = Modifier.horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             buttons()
         }

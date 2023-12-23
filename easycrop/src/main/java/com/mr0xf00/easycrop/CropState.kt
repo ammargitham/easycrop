@@ -1,28 +1,37 @@
 package com.mr0xf00.easycrop
 
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.toIntRect
 import androidx.compose.ui.unit.toSize
-import com.mr0xf00.easycrop.utils.*
+import com.mr0xf00.easycrop.images.ImageSrc
 import com.mr0xf00.easycrop.utils.constrainOffset
+import com.mr0xf00.easycrop.utils.constrainResize
 import com.mr0xf00.easycrop.utils.eq
+import com.mr0xf00.easycrop.utils.keepAspect
 import com.mr0xf00.easycrop.utils.next90
 import com.mr0xf00.easycrop.utils.prev90
-import com.mr0xf00.easycrop.images.ImageSrc
+import com.mr0xf00.easycrop.utils.scaleToFit
+import com.mr0xf00.easycrop.utils.setSize
+import com.mr0xf00.easycrop.utils.toRect
 
 /** State for the current image being cropped */
 @Stable
-public interface CropState {
-    public val src: ImageSrc
-    public var transform: ImgTransform
-    public var region: Rect
-    public var aspectLock: Boolean
-    public var shape: CropShape
-    public val accepted: Boolean
+interface CropState {
+    val src: ImageSrc
+    var transform: ImgTransform
+    var region: Rect
+    var aspectLock: Boolean
+    var shape: CropShape
+    val accepted: Boolean
+    var enabled: Boolean
     fun done(accept: Boolean)
     fun reset()
 }
@@ -49,17 +58,42 @@ internal fun CropState(
     override var region
         get() = _region
         set(value) {
-//            _region = value
+            if (!enabled) return
             _region = updateRegion(
-                old = _region, new = value,
-                bounds = imgRect, aspectLock = aspectLock
+                old = _region,
+                new = value,
+                bounds = imgRect,
+                aspectLock = _aspectLock
             )
         }
 
     val imgRect by derivedStateOf { getTransformedImageRect(transform, src.size) }
 
-    override var shape: CropShape by mutableStateOf(defaultShape)
-    override var aspectLock by mutableStateOf(defaultAspectLock)
+    private var _shape: CropShape by mutableStateOf(defaultShape)
+    override var shape
+        get() = _shape
+        set(value) {
+            if (!enabled) return
+            _shape = value
+        }
+
+    private var _aspectLock by mutableStateOf(defaultAspectLock)
+    override var aspectLock
+        get() = _aspectLock
+        set(value) {
+            if (!enabled) return
+            _aspectLock = value
+        }
+
+    private var _enabled by mutableStateOf(true)
+    override var enabled: Boolean
+        get() = _enabled
+        set(value) {
+            if (!value) {
+                reset()
+            }
+            _enabled = value
+        }
 
     private fun onTransformUpdated(old: ImgTransform, new: ImgTransform) {
         val unTransform = old.asMatrix(src.size).apply { invert() }
@@ -68,9 +102,9 @@ internal fun CropState(
 
     override fun reset() {
         transform = defaultTransform
-        shape = defaultShape
+        _shape = defaultShape
         _region = defaultRegion
-        aspectLock = defaultAspectLock
+        _aspectLock = defaultAspectLock
     }
 
     override var accepted: Boolean by mutableStateOf(false)
@@ -81,32 +115,38 @@ internal fun CropState(
     }
 }
 
-internal fun getTransformedImageRect(transform: ImgTransform, size: IntSize) : Rect {
+internal fun getTransformedImageRect(transform: ImgTransform, size: IntSize): Rect {
     val dstMat = transform.asMatrix(size)
     return dstMat.map(size.toIntRect().toRect())
 }
 
 internal fun CropState.rotLeft() {
+    if (!enabled) return
     transform = transform.copy(angleDeg = transform.angleDeg.prev90())
 }
 
 internal fun CropState.rotRight() {
+    if (!enabled) return
     transform = transform.copy(angleDeg = transform.angleDeg.next90())
 }
 
 internal fun CropState.flipHorizontal() {
+    if (!enabled) return
     if ((transform.angleDeg / 90) % 2 == 0) flipX() else flipY()
 }
 
 internal fun CropState.flipVertical() {
+    if (!enabled) return
     if ((transform.angleDeg / 90) % 2 == 0) flipY() else flipX()
 }
 
 internal fun CropState.flipX() {
+    if (!enabled) return
     transform = transform.copy(scale = transform.scale.copy(x = -1 * transform.scale.x))
 }
 
 internal fun CropState.flipY() {
+    if (!enabled) return
     transform = transform.copy(scale = transform.scale.copy(y = -1 * transform.scale.y))
 }
 

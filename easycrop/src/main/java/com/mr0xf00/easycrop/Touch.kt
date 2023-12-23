@@ -34,7 +34,11 @@ internal fun Modifier.cropperTouch(
     viewMat: ViewMat,
     pending: DragHandle?,
     onPending: (DragHandle?) -> Unit,
+    enabled: Boolean = true,
 ): Modifier = composed {
+
+    if (!enabled) return@composed this
+
     val touchRadPx2 = LocalDensity.current.run {
         remember(touchRad, viewMat.scale) { touchRad.toPx() / viewMat.scale }.let { it * it }
     }

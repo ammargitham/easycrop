@@ -102,70 +102,68 @@ private data class GestureData(
 )
 
 
-internal fun Modifier.onGestures(state: GestureState): Modifier {
-    return pointerInput(Unit) {
-        coroutineScope {
-            var info = GestureData()
-            launch {
-                detectTapGestures(
-                    onLongPress = { state.tap.onLongPress(it.x, it.y, info.maxPointers) },
-                    onTap = { state.tap.onTap(it.x, it.y, info.maxPointers) },
-                )
-            }
-            launch {
-                detectTransformGestures(panZoomLock = true) { c, _, zoom, _ ->
-                    if (!(info.isDrag || info.isZoom)) {
-                        if (info.pointers == 1) {
-                            state.drag.onBegin(info.firstPos.x, info.firstPos.y)
-                            info.pos = info.firstPos
-                            info.isDrag = true
-                        } else if (info.pointers > 1) {
-                            state.zoom.onBegin(c.x, c.y)
-                            info.isZoom = true
-                        }
-                    }
-                    if (info.isDrag) {
-                        state.drag.onNext(
-                            info.nextPos.x - info.pos.x, info.nextPos.y - info.pos.y,
-                            info.nextPos.x, info.nextPos.y, info.pointers
-                        )
-                        info.pos = info.nextPos
-                    } else if (info.isZoom) {
-                        if (zoom != 1f) state.zoom.onNext(zoom, c.x, c.y)
+internal fun Modifier.onGestures(state: GestureState) = pointerInput(Unit) {
+    coroutineScope {
+        var info = GestureData()
+        launch {
+            detectTapGestures(
+                onLongPress = { state.tap.onLongPress(it.x, it.y, info.maxPointers) },
+                onTap = { state.tap.onTap(it.x, it.y, info.maxPointers) },
+            )
+        }
+        launch {
+            detectTransformGestures(panZoomLock = true) { c, _, zoom, _ ->
+                if (!(info.isDrag || info.isZoom)) {
+                    if (info.pointers == 1) {
+                        state.drag.onBegin(info.firstPos.x, info.firstPos.y)
+                        info.pos = info.firstPos
+                        info.isDrag = true
+                    } else if (info.pointers > 1) {
+                        state.zoom.onBegin(c.x, c.y)
+                        info.isZoom = true
                     }
                 }
+                if (info.isDrag) {
+                    state.drag.onNext(
+                        info.nextPos.x - info.pos.x, info.nextPos.y - info.pos.y,
+                        info.nextPos.x, info.nextPos.y, info.pointers
+                    )
+                    info.pos = info.nextPos
+                } else if (info.isZoom) {
+                    if (zoom != 1f) state.zoom.onNext(zoom, c.x, c.y)
+                }
             }
-            launch {
-                awaitEachGesture {
-                    info = GestureData()
-                    val first = awaitFirstDown(requireUnconsumed = false)
-                    info.dragId = first.id
-                    info.firstPos = first.position
-                    info.pointers = 1
-                    info.maxPointers = 1
-                    var event: PointerEvent
-                    while (info.pointers > 0) {
-                        event = awaitPointerEvent(pass = PointerEventPass.Initial)
-                        var dragPointer: PointerInputChange? = null
-                        for (change in event.changes) {
-                            if (change.changedToDownIgnoreConsumed()) info.pointers++
-                            else if (change.changedToUpIgnoreConsumed()) info.pointers--
-                            info.maxPointers = max(info.maxPointers, info.pointers)
-                            if (change.id == info.dragId) dragPointer = change
-                        }
-                        if (dragPointer == null) dragPointer =
-                            event.changes.firstOrNull { it.pressed }
-                        if (dragPointer != null) {
-                            info.nextPos = dragPointer.position
-                            if (info.dragId != dragPointer.id) {
-                                info.pos = info.nextPos
-                                info.dragId = dragPointer.id
-                            }
+        }
+        launch {
+            awaitEachGesture {
+                info = GestureData()
+                val first = awaitFirstDown(requireUnconsumed = false)
+                info.dragId = first.id
+                info.firstPos = first.position
+                info.pointers = 1
+                info.maxPointers = 1
+                var event: PointerEvent
+                while (info.pointers > 0) {
+                    event = awaitPointerEvent(pass = PointerEventPass.Initial)
+                    var dragPointer: PointerInputChange? = null
+                    for (change in event.changes) {
+                        if (change.changedToDownIgnoreConsumed()) info.pointers++
+                        else if (change.changedToUpIgnoreConsumed()) info.pointers--
+                        info.maxPointers = max(info.maxPointers, info.pointers)
+                        if (change.id == info.dragId) dragPointer = change
+                    }
+                    if (dragPointer == null) dragPointer =
+                        event.changes.firstOrNull { it.pressed }
+                    if (dragPointer != null) {
+                        info.nextPos = dragPointer.position
+                        if (info.dragId != dragPointer.id) {
+                            info.pos = info.nextPos
+                            info.dragId = dragPointer.id
                         }
                     }
-                    if (info.isDrag) state.drag.onDone()
-                    if (info.isZoom) state.zoom.onDone()
                 }
+                if (info.isDrag) state.drag.onDone()
+                if (info.isZoom) state.zoom.onDone()
             }
         }
     }
