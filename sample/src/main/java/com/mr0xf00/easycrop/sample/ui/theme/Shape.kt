@@ -1,4 +1,4 @@
-package com.mr0xf00.easycrop.ui.theme
+package com.mr0xf00.easycrop.sample.ui.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Shapes

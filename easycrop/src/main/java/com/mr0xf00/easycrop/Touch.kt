@@ -10,12 +10,12 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.round
 import androidx.compose.ui.unit.toOffset
+import com.mr0xf00.easycrop.utils.DragState
 import com.mr0xf00.easycrop.utils.ViewMat
+import com.mr0xf00.easycrop.utils.ZoomState
 import com.mr0xf00.easycrop.utils.abs
-import com.mr0xf00.easycrop.utils.compose.DragState
-import com.mr0xf00.easycrop.utils.compose.ZoomState
-import com.mr0xf00.easycrop.utils.compose.onGestures
-import com.mr0xf00.easycrop.utils.compose.rememberGestureState
+import com.mr0xf00.easycrop.utils.onGestures
+import com.mr0xf00.easycrop.utils.rememberGestureState
 import com.mr0xf00.easycrop.utils.resize
 
 

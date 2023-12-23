@@ -1,4 +1,4 @@
-package com.mr0xf00.easycrop.ui.theme
+package com.mr0xf00.easycrop.sample.ui.theme
 
 import androidx.compose.material.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,15 +1,24 @@
-package com.mr0xf00.easycrop.ui
+package com.mr0xf00.easycrop.sample.ui
+
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.mandatorySystemGestures
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.unit.dp
 import com.mr0xf00.easycrop.CropState
 import com.mr0xf00.easycrop.CropperLoading
-import com.mr0xf00.easycrop.ui.theme.EasyCropTheme
+import com.mr0xf00.easycrop.sample.ui.theme.EasyCropTheme
+import com.mr0xf00.easycrop.ui.CropperPreview
+import com.mr0xf00.easycrop.ui.ImageCropperDialog
 
 @Composable
 fun DemoContent(

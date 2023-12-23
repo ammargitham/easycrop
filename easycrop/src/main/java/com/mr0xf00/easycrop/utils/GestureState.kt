@@ -1,15 +1,21 @@
-package com.mr0xf00.easycrop.utils.compose
+package com.mr0xf00.easycrop.utils
 
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
-import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.input.pointer.PointerEvent
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.PointerId
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.changedToDownIgnoreConsumed
+import androidx.compose.ui.input.pointer.changedToUpIgnoreConsumed
+import androidx.compose.ui.input.pointer.pointerInput
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlin.math.max
@@ -130,37 +136,35 @@ internal fun Modifier.onGestures(state: GestureState): Modifier {
                 }
             }
             launch {
-                forEachGesture {
-                    awaitPointerEventScope {
-                        info = GestureData()
-                        val first = awaitFirstDown(requireUnconsumed = false)
-                        info.dragId = first.id
-                        info.firstPos = first.position
-                        info.pointers = 1
-                        info.maxPointers = 1
-                        var event: PointerEvent
-                        while (info.pointers > 0) {
-                            event = awaitPointerEvent(pass = PointerEventPass.Initial)
-                            var dragPointer: PointerInputChange? = null
-                            for (change in event.changes) {
-                                if (change.changedToDownIgnoreConsumed()) info.pointers++
-                                else if (change.changedToUpIgnoreConsumed()) info.pointers--
-                                info.maxPointers = max(info.maxPointers, info.pointers)
-                                if (change.id == info.dragId) dragPointer = change
-                            }
-                            if (dragPointer == null) dragPointer =
-                                event.changes.firstOrNull { it.pressed }
-                            if (dragPointer != null) {
-                                info.nextPos = dragPointer.position
-                                if (info.dragId != dragPointer.id) {
-                                    info.pos = info.nextPos
-                                    info.dragId = dragPointer.id
-                                }
+                awaitEachGesture {
+                    info = GestureData()
+                    val first = awaitFirstDown(requireUnconsumed = false)
+                    info.dragId = first.id
+                    info.firstPos = first.position
+                    info.pointers = 1
+                    info.maxPointers = 1
+                    var event: PointerEvent
+                    while (info.pointers > 0) {
+                        event = awaitPointerEvent(pass = PointerEventPass.Initial)
+                        var dragPointer: PointerInputChange? = null
+                        for (change in event.changes) {
+                            if (change.changedToDownIgnoreConsumed()) info.pointers++
+                            else if (change.changedToUpIgnoreConsumed()) info.pointers--
+                            info.maxPointers = max(info.maxPointers, info.pointers)
+                            if (change.id == info.dragId) dragPointer = change
+                        }
+                        if (dragPointer == null) dragPointer =
+                            event.changes.firstOrNull { it.pressed }
+                        if (dragPointer != null) {
+                            info.nextPos = dragPointer.position
+                            if (info.dragId != dragPointer.id) {
+                                info.pos = info.nextPos
+                                info.dragId = dragPointer.id
                             }
                         }
-                        if (info.isDrag) state.drag.onDone()
-                        if (info.isZoom) state.zoom.onDone()
                     }
+                    if (info.isDrag) state.drag.onDone()
+                    if (info.isZoom) state.zoom.onDone()
                 }
             }
         }

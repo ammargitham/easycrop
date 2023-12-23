@@ -1,4 +1,4 @@
-package com.mr0xf00.easycrop.presentation
+package com.mr0xf00.easycrop.sample.presentation
 
 import android.app.Application
 import android.net.Uri
@@ -26,7 +26,7 @@ class ImagesViewModel(private val app: Application) : AndroidViewModel(app) {
 
     fun setSelectedImage(uri: Uri) {
         viewModelScope.launch {
-            when(val result = imageCropper.crop(uri, app)) {
+            when (val result = imageCropper.crop(uri, app)) {
                 CropResult.Cancelled -> {}
                 is CropError -> _cropError.value = result
                 is CropResult.Success -> {
