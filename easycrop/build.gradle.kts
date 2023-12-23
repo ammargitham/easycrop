@@ -59,7 +59,7 @@ publishing {
         // val groupId = "io.github.mr0xf00"
         val groupId = "com.github.ammargitham"
         val artifactId = "easycrop"
-        val version = "0.1.2"
+        val version = "0.2.0"
         private val releasesRepoUrl =
             uri("https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/")
         private val snapshotsRepoUrl =
