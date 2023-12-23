@@ -45,7 +45,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     implementation("androidx.activity:activity-compose:1.8.2")
-    implementation("androidx.compose.material:material")
+    implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.ui:ui")
     androidTestImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
 }

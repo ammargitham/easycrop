@@ -1,19 +1,24 @@
 package com.mr0xf00.easycrop.ui
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Surface
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Shape
@@ -22,14 +27,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import com.mr0xf00.easycrop.*
+import com.mr0xf00.easycrop.CropState
+import com.mr0xf00.easycrop.CropperStyle
+import com.mr0xf00.easycrop.DefaultCropperStyle
+import com.mr0xf00.easycrop.LocalCropperStyle
 import com.mr0xf00.easycrop.R
 
-private val CropperDialogProperties = @OptIn(ExperimentalComposeUiApi::class) (DialogProperties(
+private val CropperDialogProperties = DialogProperties(
     usePlatformDefaultWidth = false,
     dismissOnBackPress = false,
     dismissOnClickOutside = false
-))
+)
 
 @Composable
 fun ImageCropperDialog(
@@ -86,9 +94,11 @@ private fun BoxScope.DefaultControls(state: CropState) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DefaultTopBar(state: CropState) {
-    TopAppBar(title = {},
+    TopAppBar(
+        title = {},
         navigationIcon = {
             IconButton(onClick = { state.done(accept = false) }) {
                 Icon(Icons.Default.ArrowBack, null)

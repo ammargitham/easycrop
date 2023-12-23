@@ -2,15 +2,32 @@ package com.mr0xf00.easycrop.ui
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.horizontalScroll
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithCache
@@ -20,8 +37,15 @@ import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.mr0xf00.easycrop.*
+import com.mr0xf00.easycrop.AspectRatio
+import com.mr0xf00.easycrop.CropShape
+import com.mr0xf00.easycrop.CropState
+import com.mr0xf00.easycrop.LocalCropperStyle
 import com.mr0xf00.easycrop.R
+import com.mr0xf00.easycrop.flipHorizontal
+import com.mr0xf00.easycrop.flipVertical
+import com.mr0xf00.easycrop.rotLeft
+import com.mr0xf00.easycrop.rotRight
 import com.mr0xf00.easycrop.utils.eq0
 import com.mr0xf00.easycrop.utils.setAspect
 
@@ -90,9 +114,9 @@ private fun ButtonsBar(
     Surface(
         modifier = modifier,
         shape = CircleShape,
-        elevation = 4.dp,
-        color = MaterialTheme.colors.surface.copy(alpha = .8f),
-        contentColor = contentColorFor(MaterialTheme.colors.surface)
+        tonalElevation = 4.dp,
+        color = MaterialTheme.colorScheme.surface.copy(alpha = .8f),
+        contentColor = contentColorFor(MaterialTheme.colorScheme.surface)
     ) {
         if (LocalVerticalControls.current) Column(
             modifier = Modifier.verticalScroll(rememberScrollState()),
@@ -107,7 +131,6 @@ private fun ButtonsBar(
         }
     }
 }
-
 
 
 @Composable
@@ -132,7 +155,8 @@ private fun ShapeItem(
 ) {
     val color by animateColorAsState(
         targetValue = if (!selected) LocalContentColor.current
-        else MaterialTheme.colors.secondaryVariant
+        else MaterialTheme.colorScheme.surfaceVariant,
+        label = "color",
     )
     IconButton(
         modifier = modifier,
@@ -163,7 +187,7 @@ private fun AspectSelectionMenu(
     val aspects = LocalCropperStyle.current.aspects
     OptionsPopup(onDismiss = onDismiss, optionCount = 1 + aspects.size) { i ->
         val unselectedTint = LocalContentColor.current
-        val selectedTint = MaterialTheme.colors.secondaryVariant
+        val selectedTint = MaterialTheme.colorScheme.surfaceVariant
         if (i == 0) IconButton(onClick = { onLock(!lock) }) {
             Icon(
                 Icons.Default.Lock, null,

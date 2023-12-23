@@ -3,13 +3,26 @@ package com.mr0xf00.easycrop.ui
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.GenericShape
-import androidx.compose.material.Surface
-import androidx.compose.runtime.*
-import androidx.compose.ui.geometry.*
+import androidx.compose.material3.Surface
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.RoundRect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.toIntRect
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
 import com.mr0xf00.easycrop.utils.constrainOffset
@@ -17,6 +30,7 @@ import com.mr0xf00.easycrop.utils.constrainOffset
 private enum class PopupSide {
     Start, End, Top, Bottom
 }
+
 private val PopupSide.isHorizontal get() = this == PopupSide.Start || this == PopupSide.End
 private fun PopupSide.isLeft(dir: LayoutDirection) =
     (this == PopupSide.Start && dir == LayoutDirection.Ltr) ||
@@ -112,7 +126,7 @@ internal fun OptionsPopup(
     ) {
         Surface(
             shape = popupShape(anchorPos = anchorPos),
-            elevation = 8.dp,
+            tonalElevation = 8.dp,
         ) {
             if (isVertical) LazyColumn {
                 items(optionCount) { i -> option(i) }
